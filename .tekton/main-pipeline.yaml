@@ -63,7 +63,7 @@ spec:
                   "folder": "terraform",
                   "variablestore": [
                     {
-                      "name": "apikey",
+                      "name": "ibmcloud_api_key",
                       "value": "'$PIPELINE_BLUEMIX_API_KEY'",
                       "secure": true
                     },
