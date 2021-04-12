@@ -38,6 +38,8 @@ spec:
           value: $(params.resource-group)
         - name: region
           value: $(params.region)
+        - name: pipeline-debug
+          value: "1"
         - name: script
           value: |
             SCHEMATICS_WORKSPACE_NAME="$(params.resource-prefix)-schematics"
