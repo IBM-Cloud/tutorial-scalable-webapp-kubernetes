@@ -1,0 +1,77 @@
+---
+inputs:
+  - type: git
+    branch: ${GIT_BRANCH}
+    service: ${GIT_REPO}
+    path: .tekton
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: git
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: container-registry
+  - type: git
+    service: ${TEKTON_CATALOG_REPO}
+    branch: master
+    path: kubernetes-service
+  - type: git
+    service: ${TEKTON_CATALOG_REPO}
+    branch: master
+    path: toolchain
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: cra
+  - type: git
+    service: ${TEKTON_CATALOG_REPO}
+    branch: master
+    path: devops-insights
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: linter
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: tester
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: utils
+triggers:
+- type: git
+  name: Git Trigger
+  service: ${GIT_REPO}
+  branch: ${GIT_BRANCH}
+  events: {"push":true,"pull_request":false,"pull_request_closed":false}
+  eventListener: git-listener
+- type: manual
+  name: Manual Trigger
+  eventListener: manual-listener
+- type: manual
+  name: Manual Trigger (Cleanup)
+  eventListener: manual-cleanup-listener
+properties:
+- name: repository
+  value: ${GIT_REPO_URL}
+  type: text
+- name: branch
+  value: ${GIT_BRANCH}
+  type: text
+- name: revision
+  value: ${GIT_BRANCH}
+  type: text
+- name: apikey
+  value: ${API_KEY}
+  type: SECURE
+- name: resource-prefix
+  value: ${INPUT_RESOURCE_PREFIX}
+  type: text
+- name: resource-group
+  value: ${INPUT_RESOURCE_GROUP}
+  type: text
+- name: region
+  value: ${INPUT_REGION}
+  type: text
