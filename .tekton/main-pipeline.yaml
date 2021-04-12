@@ -87,7 +87,7 @@ spec:
             }' > /tmp/workspace-update.json
 
             SCHEMATICS_WORKSPACE_LIST_JSON=$(ibmcloud schematics workspace list --output json)
-            SCHEMATICS_WORKSPACE_ID=$(echo $SCHEMATICS_WORKSPACE_LIST_JSON | jq -r '.workspaces | .[] | select(.resource_group=="$(params.resource-group)" and .name=="'$SCHEMATICS_WORKSPACE_NAME'") | .id')
+            SCHEMATICS_WORKSPACE_ID=$(echo $SCHEMATICS_WORKSPACE_LIST_JSON | jq -r '.workspaces | .[]? | select(.resource_group=="$(params.resource-group)" and .name=="'$SCHEMATICS_WORKSPACE_NAME'") | .id')
             if [[ -z "$SCHEMATICS_WORKSPACE_ID" ]]; then
               echo "Workspace $SCHEMATICS_WORKSPACE_NAME not found"
               WORKSPACE_JSON=$(ibmcloud schematics workspace new --file /tmp/workspace-update.json --output json)
