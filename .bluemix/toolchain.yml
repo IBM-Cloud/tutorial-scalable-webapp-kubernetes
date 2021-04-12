@@ -28,7 +28,7 @@ services:
     service_id: githubconsolidated
     parameters:
       repo_name: '{{toolchain.name}}'
-      source_repo_url: 'https://github.com/l2fprod/simple-tekton-toolchain'
+      source_repo_url: 'https://github.com/IBM-Cloud/tutorial-scalable-webapp-kubernetes'
       type: clone
       has_issues: false
       enable_traceability: false
