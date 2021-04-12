@@ -64,6 +64,7 @@ data "ibm_resource_group" "group" {
 resource "random_string" "random" {
   length  = 8
   special = false
+  upper   = false
 }
 
 resource "ibm_cr_namespace" "namespace" {
