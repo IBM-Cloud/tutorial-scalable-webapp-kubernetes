@@ -19,7 +19,7 @@ template:
         "(" + $env.repository +
           "/tree/" + $env.branch + ")"
 toolchain:
-  name: 'simple-tekton-toolchain-{{timestamp}}'
+  name: 'scalable-webapp-kubernetes-{{timestamp}}'
   template:
     getting_started:
       $ref: "#/messages/template.gettingStarted" 
