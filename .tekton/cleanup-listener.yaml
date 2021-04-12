@@ -1,0 +1,73 @@
+apiVersion: tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: cleanup-template
+spec:
+  params:
+    - name: repository
+    - name: branch
+    - name: revision
+    - name: apikey
+    - name: resource-prefix
+    - name: resource-group
+    - name: region
+  resourcetemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: cleanup-$(uid)-pvc
+      spec:
+        resources:
+          requests:
+            storage:  5Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        name: cleanup-$(uid)
+      spec:
+        pipelineRef:
+            name: cleanup-pipeline
+        workspaces:
+          - name: cleanup-pvc
+            persistentVolumeClaim:
+              claimName: cleanup-$(uid)-pvc
+        params:
+        - name: repository
+          value: $(tt.params.repository)
+        - name: branch
+          value: $(params.branch)
+        - name: revision
+          value: $(tt.params.revision)
+        - name: apikey
+          value: $(params.apikey)
+        - name: resource-prefix
+          value: $(params.resource-prefix)
+        - name: resource-group
+          value: $(params.resource-group)
+        - name: region
+          value: $(params.region)
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: manual-cleanup-binding
+spec:
+  params:
+    - name: repository
+      value: $(params.repository)
+    - name: revision
+      value: $(params.revision)
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: manual-cleanup-listener
+spec:
+  triggers:
+    - binding:
+        name: manual-cleanup-binding
+      template:
+        name: cleanup-template

@@ -1,0 +1,45 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: cleanup-pipeline
+spec:
+  params:
+    - name: repository
+    - name: branch
+    - name: revision
+    - name: apikey
+    - name: resource-prefix
+    - name: resource-group
+    - name: region
+  workspaces:
+  - name: cleanup-pvc
+  tasks:
+    - name: clone-repo
+      taskRef:
+        name: git-clone-repo
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: branch
+          value: ""
+        - name: revision
+          value: $(params.revision)
+      workspaces:
+      - name: output
+        workspace: cleanup-pvc
+    - name: cleanup-commands
+      taskRef:
+        name: ibmcloud-cli
+      runAfter: [clone-repo]
+      params:
+        - name: resource-group
+          value: $(params.resource-group)
+        - name: region
+          value: $(params.region)
+        - name: script
+          value: |
+            set +e
+            echo "Cleanup"
+      workspaces:
+      - name: artifacts
+        workspace: cleanup-pvc

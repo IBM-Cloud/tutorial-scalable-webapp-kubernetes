@@ -1,0 +1,31 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: pipeline
+spec:
+  params:
+    - name: repository
+    - name: branch
+    - name: revision
+    - name: apikey
+    - name: resource-prefix
+    - name: resource-group
+    - name: region
+  workspaces:
+  - name: pipeline-pvc
+  tasks:
+    - name: clone-repo
+      taskRef:
+        name: git-clone-repo
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: branch
+          value: "" # don't pass the branch, we want to checkout a specific commit
+        - name: revision
+          value: $(params.revision)
+        - name: git-credentials-json-file
+          value: .git-credentials.json
+      workspaces:
+      - name: output
+        workspace: pipeline-pvc
