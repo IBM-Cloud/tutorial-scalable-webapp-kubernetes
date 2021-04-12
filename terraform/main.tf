@@ -45,12 +45,12 @@ provider "ibm" {
 }
 
 resource "ibm_resource_group" "group" {
-  count = var.resource_group != "" ? 0 : 1
+  count = var.resource-group != "" ? 0 : 1
   name  = "${var.resource-prefix}-group"
   tags  = var.tags
 }
 
 data "ibm_resource_group" "group" {
-  count = var.resource_group != "" ? 1 : 0
-  name  = var.resource_group
+  count = var.resource-group != "" ? 1 : 0
+  name  = var.resource-group
 }
