@@ -1,6 +1,5 @@
 variable "ibmcloud_api_key" {
-  type      = string
-  sensitive = true
+  type = string
 }
 
 variable "ibmcloud_timeout" {
