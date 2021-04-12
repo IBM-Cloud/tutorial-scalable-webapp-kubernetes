@@ -61,9 +61,14 @@ data "ibm_resource_group" "group" {
   name  = var.resource-group
 }
 
+resource "random_string" "random" {
+  length  = 8
+  special = false
+}
+
 resource "ibm_cr_namespace" "namespace" {
   count             = var.registry_namespace_name != "" ? 0 : 1
-  name              = "${var.resource-prefix}-cr-namespace"
+  name              = "${substr(var.resource-prefix, 0, 21)}-${random_string.random.result}"
   resource_group_id = local.resource_group_id
 }
 
