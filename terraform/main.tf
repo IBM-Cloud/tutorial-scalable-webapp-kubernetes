@@ -32,7 +32,7 @@ variable "cluster_node_flavor" {
 
 variable "tags" {
   type    = list(string)
-  default = ["terraform"]
+  default = ["terraform", "tutorial"]
 }
 
 variable "registry_namespace_name" {
@@ -83,21 +83,16 @@ resource "ibm_is_vpc" "vpc" {
   count          = var.cluster-name != "" ? 0 : 1
   name           = "${var.resource-prefix}-vpc"
   resource_group = local.resource_group_id
-
-  timeouts {
-    create = "30m"
-  }
+  tags           = var.tags
 }
 
 resource "ibm_is_public_gateway" "gateway" {
-  count = var.cluster-name != "" ? 0 : 1
-  name  = "${var.resource-prefix}-gateway"
-  vpc   = ibm_is_vpc.vpc.0.id
-  zone  = "${var.region}-1"
-
-  timeouts {
-    create = "30m"
-  }
+  count          = var.cluster-name != "" ? 0 : 1
+  name           = "${var.resource-prefix}-gateway"
+  vpc            = ibm_is_vpc.vpc.0.id
+  zone           = "${var.region}-1"
+  resource_group = local.resource_group_id
+  tags           = var.tags
 }
 
 resource "ibm_is_subnet" "subnet" {
@@ -108,17 +103,20 @@ resource "ibm_is_subnet" "subnet" {
   zone                     = "${var.region}-1"
   total_ipv4_address_count = 256
   public_gateway           = ibm_is_public_gateway.gateway.0.id
+  tags                     = var.tags
 }
 
 # a new or existing cluster
 resource "ibm_container_vpc_cluster" "cluster" {
   count             = var.cluster-name != "" ? 0 : 1
+
   # The name must be 32 or fewer characters, begin with a letter, and contain only alphanumeric characters
   name              = "${substr(var.resource-prefix, 0, 16)}${random_string.random.result}-cluster"
   vpc_id            = ibm_is_vpc.vpc.0.id
   flavor            = var.cluster_node_flavor
   worker_count      = 1
   resource_group_id = local.resource_group_id
+  tags              = var.tags
 
   zones {
     subnet_id = ibm_is_subnet.subnet.0.id
@@ -142,6 +140,7 @@ locals {
   resource_group_id       = var.resource-group != "" ? data.ibm_resource_group.group.0.id : ibm_resource_group.group.0.id
   resource_group_name     = var.resource-group != "" ? data.ibm_resource_group.group.0.name : ibm_resource_group.group.0.name
   registry_namespace_name = var.registry_namespace_name != "" ? var.registry_namespace_name : ibm_cr_namespace.namespace.0.name
+  cluster_name            = var.cluster-name != "" ? data.ibm_container_vpc_cluster.cluster.0.name : ibm_container_vpc_cluster.cluster.0.name
 }
 
 output "resource_group_id" {
@@ -154,6 +153,10 @@ output "region" {
 
 output "resource_group_name" {
   value = local.resource_group_name
+}
+
+output "cluster_name" {
+  value = local.cluster_name
 }
 
 output "registry_namespace" {
