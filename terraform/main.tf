@@ -21,6 +21,9 @@ variable "resource-group" {
   default = ""
 }
 
+variable "cluster-name" {
+  default = ""
+}
 variable "tags" {
   type    = list(string)
   default = ["terraform"]
@@ -50,6 +53,7 @@ provider "ibm" {
   ibmcloud_timeout = var.ibmcloud_timeout
 }
 
+# a new or existing resource group to create resources
 resource "ibm_resource_group" "group" {
   count = var.resource-group != "" ? 0 : 1
   name  = "${var.resource-prefix}-group"
@@ -61,6 +65,37 @@ data "ibm_resource_group" "group" {
   name  = var.resource-group
 }
 
+# a new or existing VPC and cluster
+resource "ibm_is_vpc" "vpc" {
+  count          = var.cluster-name != "" ? 0 : 1
+  name           = "${var.resource-prefix}-vpc"
+  resource_group = local.resource_group_id
+
+  timeouts {
+    create = "30m"
+  }
+}
+
+resource "ibm_is_public_gateway" "gateway" {
+  count = var.cluster-name != "" ? 0 : 1
+  name  = "${var.resource-prefix}-gateway"
+  vpc   = ibm_is_vpc.vpc.0.id
+  zone  = "${var.region}-1"
+
+  timeouts {
+    create = "30m"
+  }
+}
+
+resource "ibm_is_subnet" "subnet" {
+  count                    = var.cluster-name != "" ? 0 : 1
+  name                     = "${var.resource-prefix}-subnet"
+  vpc                      = ibm_is_vpc.vpc.0.id
+  resource_group           = local.resource_group_id
+  zone                     = "${var.region}-1"
+  total_ipv4_address_count = 256
+  public_gateway           = ibm_is_public_gateway.gateway.0.id
+}
 resource "random_string" "random" {
   length  = 8
   special = false
