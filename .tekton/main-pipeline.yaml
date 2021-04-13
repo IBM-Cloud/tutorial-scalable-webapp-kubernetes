@@ -100,7 +100,7 @@ spec:
 
     - name: deploy-app
       taskRef:
-        name: local-ibmcloud-ci
+        name: local-ibmcloud-cli
       runAfter: [build-image]
       params:
         - name: resource-group
