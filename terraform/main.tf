@@ -114,7 +114,7 @@ resource "ibm_is_subnet" "subnet" {
 
 # a new or existing cluster
 resource "ibm_container_vpc_cluster" "cluster" {
-  count             = var.cluster-name != "" ? 0 : 1
+  count = var.cluster-name != "" ? 0 : 1
 
   # The name must be 32 or fewer characters, begin with a letter, and contain only alphanumeric characters
   name              = "${substr(var.resource-prefix, 0, 16)}${random_string.random.result}-cluster"
@@ -145,6 +145,7 @@ resource "ibm_cr_namespace" "namespace" {
 # a namespace to deploy the app
 data "ibm_container_cluster_config" "cluster" {
   cluster_name_id = local.cluster_name
+  admin           = true
 }
 
 provider "kubernetes" {
