@@ -109,9 +109,9 @@ spec:
           value: $(params.region)
         - name: script
           value: |
-            MYCLUSTER="$(tasks.get-schematics-outputs.results.cluster-name)"
-            KUBERNETES_NAMESPACE="$(tasks.get-schematics-outputs.results.registry-namespace)"
-            MYPROJECT="$(params.resource-prefix)-app"
+            export MYCLUSTER=$(tasks.get-schematics-outputs.results.cluster-name)
+            export KUBERNETES_NAMESPACE=$(tasks.get-schematics-outputs.results.registry-namespace)
+            export MYPROJECT=$(params.resource-prefix)-app
 
             ibmcloud ks cluster config --cluster $MYCLUSTER
 
@@ -124,6 +124,7 @@ spec:
 
             # deploy the service
             cd chart/kubernetesnodeapp
+            helm version --client
             helm install $MYPROJECT --namespace $KUBERNETES_NAMESPACE . --set image.repository=$MYREGISTRY/$MYNAMESPACE/$MYPROJECT || true
 
             # deploy an ingress
