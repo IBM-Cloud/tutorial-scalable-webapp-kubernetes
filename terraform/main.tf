@@ -59,6 +59,13 @@ provider "ibm" {
   ibmcloud_timeout = var.ibmcloud_timeout
 }
 
+# to be used to name resources
+resource "random_string" "random" {
+  length  = 8
+  special = false
+  upper   = false
+}
+
 # a new or existing resource group to create resources
 resource "ibm_resource_group" "group" {
   count = var.resource-group != "" ? 0 : 1
@@ -106,7 +113,8 @@ resource "ibm_is_subnet" "subnet" {
 # a new or existing cluster
 resource "ibm_container_vpc_cluster" "cluster" {
   count             = var.cluster-name != "" ? 0 : 1
-  name              = "${var.resource-prefix}-cluster"
+  # The name must be 32 or fewer characters, begin with a letter, and contain only alphanumeric characters
+  name              = "${substr(var.resource-prefix, 0, 16)}${random_string.random.result}-cluster"
   vpc_id            = ibm_is_vpc.vpc.0.id
   flavor            = var.cluster_node_flavor
   worker_count      = 1
@@ -124,15 +132,9 @@ data "ibm_container_vpc_cluster" "cluster" {
 }
 
 # a new or existing container registry namespace to push images
-resource "random_string" "random" {
-  length  = 8
-  special = false
-  upper   = false
-}
-
 resource "ibm_cr_namespace" "namespace" {
   count             = var.registry_namespace_name != "" ? 0 : 1
-  name              = "${substr(var.resource-prefix, 0, 21)}-${random_string.random.result}"
+  name              = "${substr(var.resource-prefix, 0, 22)}${random_string.random.result}"
   resource_group_id = local.resource_group_id
 }
 
