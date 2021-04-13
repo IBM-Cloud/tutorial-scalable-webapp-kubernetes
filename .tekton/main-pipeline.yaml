@@ -94,6 +94,8 @@ spec:
           value: $(params.resource-group)
         - name: path-to-context
           value: app/kubernetes-node-app-master
+        - name: path-to-dockerfile
+          value: app/kubernetes-node-app-master
         - name: additional-tags
           value: "v1.0.0"
       workspaces:
