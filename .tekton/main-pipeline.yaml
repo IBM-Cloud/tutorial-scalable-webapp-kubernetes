@@ -68,13 +68,9 @@ spec:
           value: $(params.region)
         - name: script
           value: |
-            pwd
             mkdir -p app
             curl -L https://github.com/IBM-Cloud/kubernetes-node-app/archive/refs/heads/master.zip -o app/kube-node-app.zip
             unzip -q app/kube-node-app.zip -d app
-            ls -l /
-            ls -la /workspace || true
-            ls -la /artifacts || true
       workspaces:
       - name: artifacts
         workspace: pipeline-pvc
@@ -100,4 +96,50 @@ spec:
           value: "v1.0.0"
       workspaces:
       - name: source
+        workspace: pipeline-pvc
+
+    - name: deploy-app
+      taskRef:
+        name: local-ibmcloud-ci
+      runAfter: [build-image]
+      params:
+        - name: resource-group
+          value: $(params.resource-group)
+        - name: region
+          value: $(params.region)
+        - name: script
+          value: |
+            MYCLUSTER="$(tasks.get-schematics-outputs.results.cluster-name)"
+            KUBERNETES_NAMESPACE="$(tasks.get-schematics-outputs.results.registry-namespace)"
+            MYPROJECT="$(params.resource-prefix)-app"
+
+            ibmcloud ks cluster config --cluster $MYCLUSTER
+
+            if [[ "$KUBERNETES_NAMESPACE" != "default" ]]; then
+              kubectl get secret all-icr-io -n default -o yaml | sed "s/default/$KUBERNETES_NAMESPACE/g" | kubectl create -n $KUBERNETES_NAMESPACE -f - || true
+              kubectl patch -n $KUBERNETES_NAMESPACE serviceaccount/default -p '{"imagePullSecrets":[{"name": "all-icr-io"}]}' || true
+            fi
+
+            cd app/kubernetes-node-app-master
+
+            # deploy the service
+            cd chart/kubernetesnodeapp
+            helm install $MYPROJECT --namespace $KUBERNETES_NAMESPACE . --set image.repository=$MYREGISTRY/$MYNAMESPACE/$MYPROJECT || true
+
+            # deploy an ingress
+            cd ../../
+            export INGRESS_SUBDOMAIN=$(ibmcloud ks cluster get --cluster $MYCLUSTER --output json | jq -r '.ingress.hostname')
+            export INGRESS_SECRET_NAME=$(ibmcloud ks cluster get --cluster $MYCLUSTER --output json | jq -r '.ingress.secretName')
+            ./ingress.sh ibmdomain_https
+            kubectl apply -f ingress-ibmdomain.yaml
+
+            sleep 20
+
+            export CURL_HTTP_CODE=$(curl -sL -w "%{http_code}\\n" "https://$MYPROJECT.$INGRESS_SUBDOMAIN/" -o /dev/null)
+            echo "CURL HTTP CODE: $CURL_HTTP_CODE"
+            if [ $CURL_HTTP_CODE == "200" ]; then 
+              echo "The application is successfully running at https://$MYPROJECT.$INGRESS_SUBDOMAIN/"
+            fi
+      workspaces:
+      - name: artifacts
         workspace: pipeline-pvc
