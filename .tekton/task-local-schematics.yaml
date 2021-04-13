@@ -138,7 +138,31 @@ spec:
           ibmcloud schematics workspace update --id $SCHEMATICS_WORKSPACE_ID --file /tmp/workspace-update.json
         fi
 
+        # WAIT FOR WORKSPACE TO BE INACTIVE
+        echo "Waiting for workspace to be INACTIVE..."
+        while :
+        do
+          STATUS=$(ibmcloud terraform workspace get --id $SCHEMATICS_WORKSPACE_ID --output json)
+          RET_VAL=$?
+          if [ $RET_VAL -ne 0 ]; then
+            echo $STATUS
+            exit $RET_VAL
+          else
+            STATUS_VALUE=$(echo $STATUS | jq -r ".status")
+            echo -n "."
+            if [ "$STATUS_VALUE" = "INACTIVE" ]; then
+              break
+            else
+              echo -n $STATUS_VALUE
+            fi
+          fi
+          # sleep for 10 seconds, while waiting for completion
+          sleep 10
+        done
+        echo "Workspace is ready"
+
         # APPLY CHANGES
+        echo "Running apply for workspace..."
         ACTIVITY=$(ibmcloud terraform apply --id $SCHEMATICS_WORKSPACE_ID --force --json)
         ACTIVITY_ID=$(echo $ACTIVITY | jq -r ".activityid")
         echo "Waiting for activity ID $ACTIVITY_ID to complete..."
@@ -164,7 +188,7 @@ spec:
           # sleep for 10 seconds, while waiting for completion
           sleep 10
         done
-        echo "Done"
+        echo "Apply complete"
         ibmcloud terraform logs --id $SCHEMATICS_WORKSPACE_ID --act-id $ACTIVITY_ID
         ibmcloud terraform output -id $SCHEMATICS_WORKSPACE_ID --output json > /artifacts/workspace-output.json
 
