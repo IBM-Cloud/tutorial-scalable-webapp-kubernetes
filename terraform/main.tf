@@ -41,6 +41,12 @@ variable "registry_namespace_name" {
   description = "Name of the IBM Cloud Container registry namespace."
 }
 
+variable "kubernetes_namespace" {
+  type        = string
+  default     = ""
+  description = "Kubernetes namespace."
+}
+
 terraform {
   required_version = ">=0.13"
   required_providers {
@@ -136,11 +142,41 @@ resource "ibm_cr_namespace" "namespace" {
   resource_group_id = local.resource_group_id
 }
 
+# a namespace to deploy the app
+data "ibm_container_cluster_config" "cluster" {
+  cluster_name_id = local.cluster_name
+}
+
+provider "kubernetes" {
+  config_path = data.ibm_container_cluster_config.cluster.config_file_path
+}
+
+resource "kubernetes_namespace" "namespace" {
+  count = var.kubernetes_namespace != "" ? 0 : 1
+  metadata {
+    name = "${var.resource-prefix}-namespace"
+  }
+  depends_on = [
+    data.ibm_container_cluster_config.cluster
+  ]
+}
+
+data "kubernetes_namespace" "namespace" {
+  count = var.kubernetes_namespace != "" ? 1 : 0
+  metadata {
+    name = var.kubernetes_namespace
+  }
+  depends_on = [
+    data.ibm_container_cluster_config.cluster
+  ]
+}
+
 locals {
   resource_group_id       = var.resource-group != "" ? data.ibm_resource_group.group.0.id : ibm_resource_group.group.0.id
   resource_group_name     = var.resource-group != "" ? data.ibm_resource_group.group.0.name : ibm_resource_group.group.0.name
   registry_namespace_name = var.registry_namespace_name != "" ? var.registry_namespace_name : ibm_cr_namespace.namespace.0.name
   cluster_name            = var.cluster-name != "" ? data.ibm_container_vpc_cluster.cluster.0.name : ibm_container_vpc_cluster.cluster.0.name
+  kubernetes_namespace    = var.kubernetes_namespace != "" ? data.kubernetes_namespace.namespace.0.metadata[0].name : kubernetes_namespace.namespace.0.metadata[0].name
 }
 
 output "resource_group_id" {
@@ -161,4 +197,8 @@ output "cluster_name" {
 
 output "registry_namespace" {
   value = local.registry_namespace_name
+}
+
+output "kubernetes_namespace" {
+  value = local.kubernetes_namespace
 }
