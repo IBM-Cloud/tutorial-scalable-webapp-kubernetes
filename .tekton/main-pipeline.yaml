@@ -124,6 +124,9 @@ spec:
 
             # deploy the service
             cd chart/kubernetesnodeapp
+
+            # install helm 3
+            curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
             helm version --client
             helm install $MYPROJECT --namespace $KUBERNETES_NAMESPACE . --set image.repository=$MYREGISTRY/$MYNAMESPACE/$MYPROJECT || true
 
