@@ -24,6 +24,12 @@ variable "resource-group" {
 variable "cluster-name" {
   default = ""
 }
+
+variable "cluster_node_flavor" {
+  type    = string
+  default = "bx2.4x16"
+}
+
 variable "tags" {
   type    = list(string)
   default = ["terraform"]
@@ -65,7 +71,7 @@ data "ibm_resource_group" "group" {
   name  = var.resource-group
 }
 
-# a new or existing VPC and cluster
+# a new or existing VPC
 resource "ibm_is_vpc" "vpc" {
   count          = var.cluster-name != "" ? 0 : 1
   name           = "${var.resource-prefix}-vpc"
@@ -96,6 +102,28 @@ resource "ibm_is_subnet" "subnet" {
   total_ipv4_address_count = 256
   public_gateway           = ibm_is_public_gateway.gateway.0.id
 }
+
+# a new or existing cluster
+resource "ibm_container_vpc_cluster" "cluster" {
+  count             = var.cluster-name != "" ? 0 : 1
+  name              = "${var.resource-prefix}-cluster"
+  vpc_id            = ibm_is_vpc.vpc.0.id
+  flavor            = var.cluster_node_flavor
+  worker_count      = 1
+  resource_group_id = local.resource_group_id
+
+  zones {
+    subnet_id = ibm_is_subnet.subnet.0.id
+    name      = "${var.region}-1"
+  }
+}
+
+data "ibm_container_vpc_cluster" "cluster" {
+  count = var.cluster-name != "" ? 1 : 0
+  name  = var.cluster-name
+}
+
+# a new or existing container registry namespace to push images
 resource "random_string" "random" {
   length  = 8
   special = false
