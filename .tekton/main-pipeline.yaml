@@ -128,7 +128,7 @@ spec:
             # install helm 3
             curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
             helm version --client
-            helm install $MYPROJECT --namespace $KUBERNETES_NAMESPACE . --set image.repository=$(tasks.build-image.results.image-repository) || true
+            helm upgrade $MYPROJECT . --install --namespace $KUBERNETES_NAMESPACE --set image.repository=$(tasks.build-image.results.image-repository) || true
 
             # deploy an ingress
             cd ../../
@@ -139,11 +139,8 @@ spec:
 
             sleep 20
 
-            export CURL_HTTP_CODE=$(curl -sL -w "%{http_code}\\n" "https://$MYPROJECT.$INGRESS_SUBDOMAIN/" -o /dev/null)
-            echo "CURL HTTP CODE: $CURL_HTTP_CODE"
-            if [ $CURL_HTTP_CODE == "200" ]; then 
-              echo "The application is successfully running at https://$MYPROJECT.$INGRESS_SUBDOMAIN/"
-            fi
+            echo "The application should be running at https://$MYPROJECT.$INGRESS_SUBDOMAIN/"
+            curl -v https://$MYPROJECT.$INGRESS_SUBDOMAIN/
       workspaces:
       - name: artifacts
         workspace: pipeline-pvc
