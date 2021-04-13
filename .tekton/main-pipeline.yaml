@@ -31,7 +31,7 @@ spec:
         workspace: pipeline-pvc
     - name: create-or-update-schematics-workspace
       taskRef:
-        name: ibmcloud-cli
+        name: local-ibmcloud-cli
       runAfter: [clone-repo]
       params:
         - name: resource-group
@@ -100,7 +100,7 @@ spec:
         workspace: pipeline-pvc
     - name: apply-schematics-workspace
       taskRef:
-        name: ibmcloud-cli
+        name: local-ibmcloud-cli
       runAfter: [create-or-update-schematics-workspace]
       params:
         - name: resource-group

@@ -29,7 +29,7 @@ spec:
         workspace: cleanup-pvc
     - name: cleanup-commands
       taskRef:
-        name: ibmcloud-cli
+        name: local-ibmcloud-cli
       runAfter: [clone-repo]
       params:
         - name: resource-group
