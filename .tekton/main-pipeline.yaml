@@ -110,7 +110,7 @@ spec:
         - name: script
           value: |
             export MYCLUSTER=$(tasks.get-schematics-outputs.results.cluster-name)
-            export KUBERNETES_NAMESPACE=$(tasks.get-schematics-outputs.results.registry-namespace)
+            export KUBERNETES_NAMESPACE=$(tasks.get-schematics-outputs.results.kubernetes-namespace)
             export MYPROJECT=$(params.resource-prefix)-app
 
             ibmcloud ks cluster config --cluster $MYCLUSTER
