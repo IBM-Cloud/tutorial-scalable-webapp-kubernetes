@@ -68,8 +68,34 @@ spec:
           value: $(params.region)
         - name: script
           value: |
+            pwd
+            mkdir -p app
             curl -L https://github.com/IBM-Cloud/kubernetes-node-app/archive/refs/heads/master.zip -o app/kube-node-app.zip
             unzip -q app/kube-node-app.zip -d app
+            ls -l /
+            ls -la /workspace || true
+            ls -la /artifacts || true
       workspaces:
       - name: artifacts
+        workspace: pipeline-pvc
+
+    - name: build-image
+      taskRef:
+        name: icr-containerize
+      runAfter: [get-schematics-outputs, get-app-code]
+      params:
+        - name: registry-region
+          value: $(params.region)
+        - name: registry-namespace
+          value: $(tasks.get-schematics-outputs.results.registry-namespace)
+        - name: image-name
+          value: "$(params.resource-prefix)-image"
+        - name: resource-group
+          value: $(params.resource-group)
+        - name: path-to-context
+          value: app/kubernetes-node-app-master
+        - name: additional-tags
+          value: "v1.0.0"
+      workspaces:
+      - name: source
         workspace: pipeline-pvc
