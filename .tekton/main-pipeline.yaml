@@ -128,7 +128,7 @@ spec:
             # install helm 3
             curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
             helm version --client
-            helm install $MYPROJECT --namespace $KUBERNETES_NAMESPACE . --set image.repository=$MYREGISTRY/$MYNAMESPACE/$MYPROJECT || true
+            helm install $MYPROJECT --namespace $KUBERNETES_NAMESPACE . --set image.repository=$(tasks.build-image.results.image-repository) || true
 
             # deploy an ingress
             cd ../../
