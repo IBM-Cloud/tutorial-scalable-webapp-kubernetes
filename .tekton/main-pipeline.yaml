@@ -114,10 +114,17 @@ spec:
             export MYPROJECT=$(params.resource-prefix)-app
 
             ibmcloud ks cluster config --cluster $MYCLUSTER
+            export INGRESS_SUBDOMAIN=$(ibmcloud ks cluster get --cluster $MYCLUSTER --output json | jq -r '.ingress.hostname')
+            export INGRESS_SECRET_NAME=$(ibmcloud ks cluster get --cluster $MYCLUSTER --output json | jq -r '.ingress.secretName')
 
             if [[ "$KUBERNETES_NAMESPACE" != "default" ]]; then
+              # secret to access container registry images
               kubectl get secret all-icr-io -n default -o yaml | sed "s/default/$KUBERNETES_NAMESPACE/g" | kubectl create -n $KUBERNETES_NAMESPACE -f - || true
               kubectl patch -n $KUBERNETES_NAMESPACE serviceaccount/default -p '{"imagePullSecrets":[{"name": "all-icr-io"}]}' || true
+
+              # secret to secure ingress https://cloud.ibm.com/docs/containers?topic=containers-ingress-types#alb-migrate-1
+              INGRESS_SECRET_CRN=$(ibmcloud ks ingress secret get -c $MYCLUSTER --name $INGRESS_SECRET_NAME --namespace default --output json | jq -r .crn)
+              ibmcloud ks ingress secret create --cluster $MYCLUSTER --cert-crn $INGRESS_SECRET_CRN --name $INGRESS_SECRET_NAME --namespace $KUBERNETES_NAMESPACE || true
             fi
 
             cd app/kubernetes-node-app-master
@@ -132,8 +139,6 @@ spec:
 
             # deploy an ingress
             cd ../../
-            export INGRESS_SUBDOMAIN=$(ibmcloud ks cluster get --cluster $MYCLUSTER --output json | jq -r '.ingress.hostname')
-            export INGRESS_SECRET_NAME=$(ibmcloud ks cluster get --cluster $MYCLUSTER --output json | jq -r '.ingress.secretName')
             ./ingress.sh ibmdomain_https
             kubectl apply -f ingress-ibmdomain.yaml
 
