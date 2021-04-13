@@ -193,7 +193,7 @@ spec:
         ibmcloud terraform output -id $SCHEMATICS_WORKSPACE_ID --output json > /artifacts/workspace-output.json
 
         # capture outputs
-        echo -n "$SCHEMATICS_WORKSPACE_ID" > $(results.workspace-id.json)
+        echo -n "$SCHEMATICS_WORKSPACE_ID" > $(results.workspace-id.path)
         echo -n "$IBM_CLOUD_REGION" > $(results.region.path)
       volumeMounts:
         - mountPath: /cd-config
