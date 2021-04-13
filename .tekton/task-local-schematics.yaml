@@ -2,6 +2,31 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
+  name: local-schematics-output
+spec:
+  results:
+    - name: cluster-name
+    - name: kubernetes-namespace
+    - name: registry-namespace
+  workspaces:
+    - name: artifacts
+      description: A workspace
+      mountPath: /artifacts
+  steps:
+    - name: execute
+      image: ibmcom/pipeline-base-image:2.12
+      workingDir: /artifacts
+      script: |
+        #!/bin/bash
+        set -e -o pipefail
+
+        echo -n $(cat /artifacts/workspace-output.json | jq -r '.[0].output_values[0].cluster_name.value') > $(results.cluster-name.path)
+        echo -n $(cat /artifacts/workspace-output.json | jq -r '.[0].output_values[0].kubernetes_namespace.value') > $(results.kubernetes-namespace.path)
+        echo -n $(cat /artifacts/workspace-output.json | jq -r '.[0].output_values[0].registry_namespace.value') > $(results.registry-namespace.path)
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
   name: local-schematics
 spec:
   params:

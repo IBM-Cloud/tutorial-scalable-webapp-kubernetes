@@ -29,6 +29,7 @@ spec:
       workspaces:
       - name: output
         workspace: pipeline-pvc
+
     - name: deploy-infrastructure
       taskRef:
         name: local-schematics
@@ -44,6 +45,31 @@ spec:
           value: $(params.repository)
         - name: branch
           value: $(params.branch)
+      workspaces:
+      - name: artifacts
+        workspace: pipeline-pvc
+
+    - name: get-schematics-outputs
+      taskRef:
+        name: local-schematics-output
+      runAfter: [deploy-infrastructure]
+      workspaces:
+      - name: artifacts
+        workspace: pipeline-pvc
+
+    - name: get-app-code
+      taskRef:
+        name: local-ibmcloud-cli
+      runAfter: [clone-repo]
+      params:
+        - name: resource-group
+          value: $(params.resource-group)
+        - name: region
+          value: $(params.region)
+        - name: script
+          value: |
+            curl -L https://github.com/IBM-Cloud/kubernetes-node-app/archive/refs/heads/master.zip -o app/kube-node-app.zip
+            unzip -q app/kube-node-app.zip -d app
       workspaces:
       - name: artifacts
         workspace: pipeline-pvc
