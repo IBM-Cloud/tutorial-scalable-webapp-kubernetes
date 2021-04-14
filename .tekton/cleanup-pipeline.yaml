@@ -29,17 +29,17 @@ spec:
         workspace: cleanup-pvc
     - name: cleanup-commands
       taskRef:
-        name: local-ibmcloud-cli
+        name: local-schematics-destroy
       runAfter: [clone-repo]
       params:
         - name: resource-group
           value: $(params.resource-group)
         - name: region
           value: $(params.region)
-        - name: script
-          value: |
-            set +e
-            echo "Cleanup"
+        - name: resource-prefix
+          value: $(params.resource-prefix)
+        - name: pipeline-debug
+          value: "1"
       workspaces:
       - name: artifacts
         workspace: cleanup-pvc

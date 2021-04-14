@@ -32,7 +32,7 @@ spec:
 
     - name: deploy-infrastructure
       taskRef:
-        name: local-schematics
+        name: local-schematics-create-and-apply
       runAfter: [clone-repo]
       params:
         - name: resource-group
