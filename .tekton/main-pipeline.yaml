@@ -143,10 +143,7 @@ spec:
             ./ingress.sh ibmdomain_https
             kubectl apply -f ingress-ibmdomain.yaml
 
-            sleep 20
-
-            echo "The application should be running at https://$MYPROJECT.$INGRESS_SUBDOMAIN/"
-            curl -v https://$MYPROJECT.$INGRESS_SUBDOMAIN/
+            echo "The application will be running at https://$MYPROJECT.$INGRESS_SUBDOMAIN/"
       workspaces:
       - name: artifacts
         workspace: pipeline-pvc
