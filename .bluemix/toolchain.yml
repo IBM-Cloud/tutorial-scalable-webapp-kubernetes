@@ -61,7 +61,7 @@ services:
           INPUT_RESOURCE_PREFIX: '{{form.pipeline.parameters.resource-prefix}}'
           INPUT_RESOURCE_GROUP: '{{form.pipeline.parameters.resource-group}}'
           INPUT_REGION: '{{form.pipeline.parameters.region}}'
-        #execute: Manual Trigger
+        execute: Manual Trigger
 form:
   pipeline:
     parameters:
