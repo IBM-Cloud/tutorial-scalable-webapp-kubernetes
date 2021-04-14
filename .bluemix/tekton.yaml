@@ -17,12 +17,6 @@ inputs:
     branch: master
     path: kubernetes-service
 triggers:
-- type: git
-  name: Git Trigger
-  service: ${GIT_REPO}
-  branch: ${GIT_BRANCH}
-  events: {"push":true,"pull_request":false,"pull_request_closed":false}
-  eventListener: git-listener
 - type: manual
   name: Manual Trigger
   eventListener: manual-listener
