@@ -32,7 +32,7 @@ services:
       type: "link"
       has_issues: false
       enable_traceability: false
-      kind: ['pipeline']
+      kind: ['hidden']
   tekton-catalog-repo:
     service_id: githubconsolidated
     parameters:
@@ -41,7 +41,7 @@ services:
       type: "link"
       has_issues: false
       enable_traceability: false
-      kind: ['pipeline']
+      kind: ['hidden']
   build:
     service_id: pipeline
     parameters:
