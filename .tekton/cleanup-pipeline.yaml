@@ -38,8 +38,6 @@ spec:
           value: $(params.region)
         - name: resource-prefix
           value: $(params.resource-prefix)
-        - name: pipeline-debug
-          value: "1"
       workspaces:
       - name: artifacts
         workspace: cleanup-pvc
