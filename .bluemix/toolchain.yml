@@ -32,7 +32,7 @@ services:
       type: "link"
       has_issues: false
       enable_traceability: false
-      ui-pipeline: false
+      ui_pipeline: false
   tekton-catalog-repo:
     service_id: githubconsolidated
     parameters:
