@@ -8,6 +8,7 @@ template:
     $ref: "#/messages/template.description"
   required:
     - build
+    - code-repo
     - tekton-catalog-repo
   info:
     git url: >
@@ -23,6 +24,15 @@ toolchain:
     getting_started:
       $ref: "#/messages/template.gettingStarted" 
 services:
+  code-repo:
+    service_id: githubconsolidated
+    parameters:
+      repo_url: 'https://github.com/IBM-Cloud/tutorial-scalable-webapp-kubernetes'
+      source_repo_url: 'https://github.com/IBM-Cloud/tutorial-scalable-webapp-kubernetes'
+      type: "link"
+      has_issues: false
+      enable_traceability: false
+      kind: ['pipeline']
   tekton-catalog-repo:
     service_id: githubconsolidated
     parameters:
@@ -42,6 +52,7 @@ services:
         content:
           $text: tekton.yaml
         env:
+          GIT_REPO: code-repo
           GIT_REPO_URL: 'https://github.com/IBM-Cloud/tutorial-scalable-webapp-kubernetes'
           GIT_BRANCH: $env.branch
           TEKTON_CATALOG_REPO: tekton-catalog-repo

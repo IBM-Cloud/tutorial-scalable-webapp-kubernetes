@@ -2,7 +2,7 @@
 inputs:
   - type: git
     branch: ${GIT_BRANCH}
-    url: "https://github.com/IBM-Cloud/tutorial-scalable-webapp-kubernetes.git"
+    service: ${GIT_REPO}
     path: .tekton
   - type: git
     branch: master
