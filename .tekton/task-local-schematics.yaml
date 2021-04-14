@@ -113,7 +113,7 @@ spec:
             exit $RET_VAL
           else
             STATUS_VALUE=$(echo $STATUS | jq -r ".status")
-            echo -n "."
+            echo "...$STATUS_VALUE"
             if [ "$STATUS_VALUE" = "FAILED" ]; then 
               ibmcloud terraform logs --id $SCHEMATICS_WORKSPACE_ID --act-id $ACTIVITY_ID
               exit 1
@@ -121,8 +121,8 @@ spec:
               break
             fi
           fi
-          # sleep for 10 seconds, while waiting for completion
-          sleep 10
+          # sleep while waiting for completion
+          sleep 30
         done
         echo "Destroy complete"
 
@@ -281,14 +281,12 @@ spec:
             exit $RET_VAL
           else
             STATUS_VALUE=$(echo $STATUS | jq -r ".status")
-            echo -n "."
+            echo "...$STATUS_VALUE"
             if [ "$STATUS_VALUE" = "INACTIVE" ]; then
               break
-            else
-              echo -n $STATUS_VALUE
             fi
           fi
-          # sleep for 10 seconds, while waiting for completion
+          # sleep while waiting for completion
           sleep 10
         done
         echo "Workspace is ready"
@@ -309,7 +307,7 @@ spec:
             exit $RET_VAL
           else
             STATUS_VALUE=$(echo $STATUS | jq -r ".status")
-            echo -n "."
+            echo "...$STATUS_VALUE"
             if [ "$STATUS_VALUE" = "FAILED" ]; then 
               ibmcloud terraform logs --id $SCHEMATICS_WORKSPACE_ID --act-id $ACTIVITY_ID
               exit 1
@@ -317,8 +315,8 @@ spec:
               break
             fi
           fi
-          # sleep for 10 seconds, while waiting for completion
-          sleep 10
+          # sleep while waiting for completion
+          sleep 30
         done
         echo "Apply complete"
         ibmcloud terraform logs --id $SCHEMATICS_WORKSPACE_ID --act-id $ACTIVITY_ID
