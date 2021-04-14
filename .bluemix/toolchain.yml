@@ -5,6 +5,7 @@ template:
   name: 'Tutorial - {{tutorialName}}'
   description:
     $ref: "#/messages/template.description"
+  header: '![]({{tutorialDiagram}})'
   required:
     - build
     - code-repo
