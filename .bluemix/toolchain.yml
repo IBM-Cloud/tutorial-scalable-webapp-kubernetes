@@ -64,7 +64,7 @@ services:
 form:
   pipeline:
     parameters:
-      # allow initialization from environment, i.e from the URL quey parameters
+      # allow initialization from environment, i.e from the URL query parameters for automation
       api-key: '{{apiKey}}'
       resource-prefix: >
         $env.resourcePrefix ?
