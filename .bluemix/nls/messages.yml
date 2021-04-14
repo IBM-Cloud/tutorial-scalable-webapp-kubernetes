@@ -2,7 +2,7 @@
 #The format for creating a link with a URL and text is [link text](link url) with no spaces or characters between the two sets of brackets- []()
 template.name: "Deploy a tutorial"
 template.description: "With this toolchain, you can deploy the architecture shown in the tutorial."
-template.gettingStarted: "**Your toolchain is ready!**"
+template.gettingStarted: "**Your toolchain is ready! Wait for the first pipeline run to complete to access the deployed application.**"
 deploy.title: "Toolchain"
 deploy.description: "A toolchain to deploy a tutorial"
 deploy.longDescription: "The Delivery Pipeline automates the deployment of the tutorial architecture."
