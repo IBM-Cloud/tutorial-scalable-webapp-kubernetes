@@ -127,6 +127,7 @@ spec:
               ibmcloud ks ingress secret create --cluster $MYCLUSTER --cert-crn $INGRESS_SECRET_CRN --name $INGRESS_SECRET_NAME --namespace $KUBERNETES_NAMESPACE || true
             fi
 
+            # change to the app directory
             cd app/kubernetes-node-app-master
 
             # deploy the service
