@@ -2,7 +2,7 @@
 inputs:
   - type: git
     branch: ${GIT_BRANCH}
-    service: ${GIT_REPO}
+    url: ${GIT_REPO_URL}
     path: .tekton
   - type: git
     branch: master
