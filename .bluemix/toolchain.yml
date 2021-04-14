@@ -8,6 +8,8 @@ template:
     $ref: "#/messages/template.description"
   required:
     - build
+    - code-repo
+    - tekton-catalog-repo
   info:
     git url: >
       "[" + $env.repository + "]" +
@@ -22,9 +24,29 @@ toolchain:
     getting_started:
       $ref: "#/messages/template.gettingStarted" 
 services:
+  code-repo:
+    service_id: githubconsolidated
+    parameters:
+      repo_url: 'https://github.com/IBM-Cloud/tutorial-scalable-webapp-kubernetes'
+      source_repo_url: 'https://github.com/IBM-Cloud/tutorial-scalable-webapp-kubernetes'
+      type: "link"
+      has_issues: false
+      enable_traceability: false
+      kind: ['pipeline']
+  tekton-catalog-repo:
+    service_id: githubconsolidated
+    parameters:
+      repo_url: "https://github.com/open-toolchain/tekton-catalog"
+      source_repo_url: "https://github.com/open-toolchain/tekton-catalog"
+      type: "link"
+      has_issues: false
+      enable_traceability: false
+      kind: ['pipeline']
   build:
     service_id: pipeline
     parameters:
+      services:
+        - code-repo
       name: 'scalable-webapp-kubernetes'
       type: tekton
       ui-pipeline: true
@@ -32,14 +54,15 @@ services:
         content:
           $text: tekton.yaml
         env:
+          GIT_REPO: code-repo
           GIT_REPO_URL: 'https://github.com/IBM-Cloud/tutorial-scalable-webapp-kubernetes'
           GIT_BRANCH: $env.branch
-          TEKTON_CATALOG_REPO: 'https://github.com/open-toolchain/tekton-catalog'
+          TEKTON_CATALOG_REPO: tekton-catalog-repo
           API_KEY: '{{form.pipeline.parameters.api-key}}'
           INPUT_RESOURCE_PREFIX: '{{form.pipeline.parameters.resource-prefix}}'
           INPUT_RESOURCE_GROUP: '{{form.pipeline.parameters.resource-group}}'
           INPUT_REGION: '{{form.pipeline.parameters.region}}'
-        execute: Manual Trigger
+        #execute: Manual Trigger
 form:
   pipeline:
     parameters:
