@@ -49,7 +49,7 @@ spec:
       - name: artifacts
         workspace: pipeline-pvc
 
-    - name: get-schematics-outputs
+    - name: get-infrastructure-output
       taskRef:
         name: local-schematics-output
       runAfter: [deploy-infrastructure]
@@ -75,15 +75,15 @@ spec:
       - name: artifacts
         workspace: pipeline-pvc
 
-    - name: build-image
+    - name: build-app
       taskRef:
         name: icr-containerize
-      runAfter: [get-schematics-outputs, get-app-code]
+      runAfter: [get-infrastructure-output, get-app-code]
       params:
         - name: registry-region
           value: $(params.region)
         - name: registry-namespace
-          value: $(tasks.get-schematics-outputs.results.registry-namespace)
+          value: $(tasks.get-infrastructure-output.results.registry-namespace)
         - name: image-name
           value: "$(params.resource-prefix)-image"
         - name: resource-group
@@ -101,7 +101,7 @@ spec:
     - name: deploy-app
       taskRef:
         name: local-ibmcloud-cli
-      runAfter: [build-image]
+      runAfter: [build-app]
       params:
         - name: resource-group
           value: $(params.resource-group)
@@ -109,8 +109,8 @@ spec:
           value: $(params.region)
         - name: script
           value: |
-            export MYCLUSTER=$(tasks.get-schematics-outputs.results.cluster-name)
-            export KUBERNETES_NAMESPACE=$(tasks.get-schematics-outputs.results.kubernetes-namespace)
+            export MYCLUSTER=$(tasks.get-infrastructure-output.results.cluster-name)
+            export KUBERNETES_NAMESPACE=$(tasks.get-infrastructure-output.results.kubernetes-namespace)
             export MYPROJECT=$(params.resource-prefix)-app
 
             ibmcloud ks cluster config --cluster $MYCLUSTER
@@ -127,6 +127,7 @@ spec:
               ibmcloud ks ingress secret create --cluster $MYCLUSTER --cert-crn $INGRESS_SECRET_CRN --name $INGRESS_SECRET_NAME --namespace $KUBERNETES_NAMESPACE || true
             fi
 
+            # change to the app directory
             cd app/kubernetes-node-app-master
 
             # deploy the service
@@ -135,17 +136,14 @@ spec:
             # install helm 3
             curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
             helm version --client
-            helm upgrade $MYPROJECT . --install --namespace $KUBERNETES_NAMESPACE --set image.repository=$(tasks.build-image.results.image-repository) || true
+            helm upgrade $MYPROJECT . --install --namespace $KUBERNETES_NAMESPACE --set image.repository=$(tasks.build-app.results.image-repository) || true
 
             # deploy an ingress
             cd ../../
             ./ingress.sh ibmdomain_https
             kubectl apply -f ingress-ibmdomain.yaml
 
-            sleep 20
-
-            echo "The application should be running at https://$MYPROJECT.$INGRESS_SUBDOMAIN/"
-            curl -v https://$MYPROJECT.$INGRESS_SUBDOMAIN/
+            echo "The application will be running at https://$MYPROJECT.$INGRESS_SUBDOMAIN/"
       workspaces:
       - name: artifacts
         workspace: pipeline-pvc

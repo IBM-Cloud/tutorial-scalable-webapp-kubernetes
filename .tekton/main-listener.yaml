@@ -53,28 +53,6 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: git-binding
-spec:
-  params:
-    - name: repository
-      value: $(event.repository.html_url)
-    - name: revision
-      value: $(event.after)
----
-apiVersion: tekton.dev/v1beta1
-kind: EventListener
-metadata:
-  name: git-listener
-spec:
-  triggers:
-    - binding:
-        name: git-binding
-      template:
-        name: template
----
-apiVersion: tekton.dev/v1beta1
-kind: TriggerBinding
-metadata:
   name: manual-binding
 spec:
   params:

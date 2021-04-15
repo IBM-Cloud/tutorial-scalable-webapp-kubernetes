@@ -2,10 +2,10 @@ version: '2'
 messages:
   $i18n: locales.yml
 template:
-  name:
-    $ref: "#/messages/template.name"
+  name: 'Tutorial - {{tutorialName}}'
   description:
     $ref: "#/messages/template.description"
+  header: '![]({{tutorialDiagram}})'
   required:
     - build
     - code-repo
@@ -19,7 +19,7 @@ template:
         "(" + $env.repository +
           "/tree/" + $env.branch + ")"
 toolchain:
-  name: 'scalable-webapp-kubernetes-{{timestamp}}'
+  name: '{{tutorialId}}-{{timestamp}}'
   template:
     getting_started:
       $ref: "#/messages/template.gettingStarted" 
@@ -27,11 +27,12 @@ services:
   code-repo:
     service_id: githubconsolidated
     parameters:
-      repo_name: '{{toolchain.name}}'
-      source_repo_url: 'https://github.com/IBM-Cloud/tutorial-scalable-webapp-kubernetes'
-      type: clone
+      repo_url: $env.repository
+      source_repo_url: $env.repository
+      type: "link"
       has_issues: false
       enable_traceability: false
+      kind: ['pipeline']
   tekton-catalog-repo:
     service_id: githubconsolidated
     parameters:
@@ -44,9 +45,7 @@ services:
   build:
     service_id: pipeline
     parameters:
-      services:
-        - code-repo
-      name: '{{services.code-repo.parameters.repo_name}}'
+      name: 'build and deploy'
       type: tekton
       ui-pipeline: true
       configuration:
@@ -54,7 +53,7 @@ services:
           $text: tekton.yaml
         env:
           GIT_REPO: code-repo
-          GIT_REPO_URL: '{{services.code-repo.parameters.source_repo_url}}'
+          GIT_REPO_URL: $env.repository
           GIT_BRANCH: $env.branch
           TEKTON_CATALOG_REPO: tekton-catalog-repo
           API_KEY: '{{form.pipeline.parameters.api-key}}'
@@ -65,11 +64,11 @@ services:
 form:
   pipeline:
     parameters:
-      # allow initialization from environment, i.e from the URL quey parameters
+      # allow initialization from environment, i.e from the URL query parameters for automation
       api-key: '{{apiKey}}'
       resource-prefix: >
         $env.resourcePrefix ?
-          '{{resourcePrefix}}' : '{{services.code-repo.parameters.repo_name}}'
+          '{{resourcePrefix}}' : '{{tutorialId}}-{{timestamp}}'
       resource-group: '{{resourceGroup}}'
       region: '{{region}}'
     schema:

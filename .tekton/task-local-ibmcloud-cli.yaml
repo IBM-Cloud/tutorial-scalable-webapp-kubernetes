@@ -37,22 +37,6 @@ spec:
       image: ibmcom/pipeline-base-image:2.12
       workingDir: /artifacts
       env:
-        - name: BUILD_NUMBER
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.annotations['devops.cloud.ibm.com/build-number']
-        - name: PIPELINE_ID
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-id']
-        - name: PIPELINE_STAGE_EXECUTION_ID
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.annotations['devops.cloud.ibm.com/tekton-pipeline']
-        - name: PIPELINE_TRIGGERING_USER
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.annotations['devops.cloud.ibm.com/triggered-by']
         - name: PIPELINE_BLUEMIX_API_KEY
           valueFrom:
             secretKeyRef:
@@ -60,8 +44,6 @@ spec:
               key: $(params.apikey-secret-key)
         - name: PIPELINE_BLUEMIX_RESOURCE_GROUP
           value: $(params.resource-group)
-        - name: SHUTTLE_PROPERTIES_FILE
-          value: $(params.shuttle-properties-file)
         - name: PIPELINE_DEBUG
           value: $(params.pipeline-debug)
       script: |
@@ -89,12 +71,6 @@ spec:
         ibmcloud login -a $(params.ibmcloud-api) -r $IBM_CLOUD_REGION --apikey $PIPELINE_BLUEMIX_API_KEY
         if [ "$PIPELINE_BLUEMIX_RESOURCE_GROUP" ]; then
           ibmcloud target -g "$PIPELINE_BLUEMIX_RESOURCE_GROUP"
-        fi
-
-        export PIPELINE_TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /artifacts/_toolchain.json)
-        if [ "$SHUTTLE_PROPERTIES_FILE" ]; then
-          source $SHUTTLE_PROPERTIES_FILE
-          export $(cut -d= -f1 $SHUTTLE_PROPERTIES_FILE)
         fi
 
         # DO THE WORK
