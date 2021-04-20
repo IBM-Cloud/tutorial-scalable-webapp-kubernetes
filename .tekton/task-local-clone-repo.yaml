@@ -28,7 +28,7 @@ spec:
         - name: DIRECTORY_NAME
           value: $(params.destinationDir)
       script: |
-        set -e -o pipefail
+        set -e
 
         ARTIFACTS_PATH="$(workspaces.output.path)"
         cd $ARTIFACTS_PATH
@@ -58,3 +58,9 @@ spec:
           fi
         fi
         eval "$_clone_command"
+
+        cd $DIRECTORY_NAME
+        if [ "$REVISION" ]; then
+          # Point the HEAD to the specific revision
+          git checkout -q $REVISION
+        fi
