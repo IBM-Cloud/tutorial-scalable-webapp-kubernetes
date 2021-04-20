@@ -11,6 +11,8 @@ spec:
       default: ""
     - name: destinationDir
       default: "."
+  results:
+    - name: git-commit
   workspaces:
     - name: output
       description: where to clone the repo
@@ -64,3 +66,6 @@ spec:
           # Point the HEAD to the specific revision
           git checkout -q $REVISION
         fi
+        GIT_COMMIT=$(git show-ref --head | head -n1 | awk '{print $1}')
+
+        echo -n "${GIT_COMMIT}" > $(results.git-commit.path)
