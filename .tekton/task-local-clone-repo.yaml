@@ -30,7 +30,7 @@ spec:
         - name: DIRECTORY_NAME
           value: $(params.destinationDir)
       script: |
-        set -e
+        set -e -x
 
         ARTIFACTS_PATH="$(workspaces.output.path)"
         cd $ARTIFACTS_PATH
@@ -59,6 +59,7 @@ spec:
             _clone_command='git clone -q -b "$BRANCH" $GIT_URL $DIRECTORY_NAME'
           fi
         fi
+        echo $_clone_command
         eval "$_clone_command"
 
         cd $DIRECTORY_NAME
