@@ -11,6 +11,8 @@ spec:
       default: ""
     - name: destinationDir
       default: "."
+    - name: pipeline-debug
+      default: "0"
   results:
     - name: git-commit
   workspaces:
@@ -19,7 +21,7 @@ spec:
       mountPath: /output
   steps:
     - name: clone
-      image: alpine/git
+      image: ibmcom/pipeline-base-image:2.12
       env:
         - name: GIT_URL
           value: $(params.repository)
@@ -29,8 +31,22 @@ spec:
           value: $(params.revision)
         - name: DIRECTORY_NAME
           value: $(params.destinationDir)
+        - name: PIPELINE_DEBUG
+          value: $(params.pipeline-debug)
       script: |
-        set -e -x
+        #!/bin/bash
+        set -e -o pipefail
+        if [ $PIPELINE_DEBUG == 1 ]; then
+            env
+            pwd
+            ls -l
+            echo "=== cat /artifacts/_toolchain.json ==="
+            cat /artifacts/_toolchain.json
+            echo ""
+            echo "======================================"
+            trap env EXIT
+            set -x
+        fi
 
         ARTIFACTS_PATH="$(workspaces.output.path)"
         cd $ARTIFACTS_PATH
@@ -59,7 +75,7 @@ spec:
             _clone_command='git clone -q -b "$BRANCH" $GIT_URL $DIRECTORY_NAME'
           fi
         fi
-        echo $_clone_command
+        eval "echo $_clone_command"
         eval "$_clone_command"
 
         cd $DIRECTORY_NAME
