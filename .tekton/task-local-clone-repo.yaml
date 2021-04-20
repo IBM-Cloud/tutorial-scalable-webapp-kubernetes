@@ -1,0 +1,59 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: local-clone-repo
+spec:
+  params:
+    - name: repository
+    - name: branch
+      default: ""
+    - name: revision
+    - name: destinationDir
+      default: "."
+  workspaces:
+    - name: output
+      description: where to clone the repo
+      mountPath: /output
+  steps:
+    - name: clone
+      image: alpine/git
+      env:
+        - name: GIT_URL
+          value: $(params.repository)
+        - name: BRANCH
+          value: $(params.branch)
+        - name: REVISION
+          value: $(params.revision)
+        - name: DIRECTORY_NAME
+          value: $(params.destinationDir)
+      script: |
+        set -e -o pipefail
+
+        ARTIFACTS_PATH="$(workspaces.output.path)"
+        cd $ARTIFACTS_PATH
+
+        BRANCH=$(echo $BRANCH)
+        REVISION=$(echo $REVISION)
+
+        if [ "$REVISION" ]; then
+          # check if the branch exists (that may not be the case in case of a pipeline-run re-run)
+          echo "Fetching specific -${REVISION}- commit"
+          if [ -z "$BRANCH" ]; then
+            # No branch provided
+            _clone_command='git clone -q -n $GIT_URL $DIRECTORY_NAME'
+          elif git ls-remote --heads --exit-code $GIT_URL $BRANCH > /dev/null 2>&1; then
+            _clone_command='git clone -q -b "$BRANCH" $GIT_URL $DIRECTORY_NAME'
+          else
+            echo "branch $BRANCH does not exists in $REPOSITORY"
+            _clone_command='git clone -q -n $GIT_URL $DIRECTORY_NAME'
+          fi
+        else
+          if [ -z "$BRANCH" ]; then
+            # No branch provided
+            echo "No branch or revision provided."
+            _clone_command='git clone -q -n $GIT_URL $DIRECTORY_NAME'
+          else
+            _clone_command='git clone -q -b "$BRANCH" $GIT_URL $DIRECTORY_NAME'
+          fi
+        fi
+        eval "$_clone_command"
