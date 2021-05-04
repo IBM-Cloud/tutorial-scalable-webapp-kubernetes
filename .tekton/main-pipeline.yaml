@@ -16,7 +16,7 @@ spec:
   tasks:
     - name: clone-repo
       taskRef:
-        name: git-clone-repo
+        name: local-clone-repo
       params:
         - name: repository
           value: $(params.repository)
@@ -24,8 +24,6 @@ spec:
           value: "" # don't pass the branch, we want to checkout a specific commit
         - name: revision
           value: $(params.revision)
-        - name: git-credentials-json-file
-          value: .git-credentials.json
       workspaces:
       - name: output
         workspace: pipeline-pvc
@@ -59,20 +57,17 @@ spec:
 
     - name: get-app-code
       taskRef:
-        name: local-ibmcloud-cli
+        name: local-clone-repo
       runAfter: [clone-repo]
       params:
-        - name: resource-group
-          value: $(params.resource-group)
-        - name: region
-          value: $(params.region)
-        - name: script
-          value: |
-            mkdir -p app
-            curl -L https://github.com/IBM-Cloud/kubernetes-node-app/archive/refs/heads/master.zip -o app/kube-node-app.zip
-            unzip -q app/kube-node-app.zip -d app
+        - name: repository
+          value: "https://github.com/IBM-Cloud/kubernetes-node-app"
+        - name: branch
+          value: "master"
+        - name: destinationDir
+          value: "app"
       workspaces:
-      - name: artifacts
+      - name: output
         workspace: pipeline-pvc
 
     - name: build-app
@@ -89,9 +84,9 @@ spec:
         - name: resource-group
           value: $(params.resource-group)
         - name: path-to-context
-          value: app/kubernetes-node-app-master
+          value: app
         - name: path-to-dockerfile
-          value: app/kubernetes-node-app-master
+          value: app
         - name: additional-tags
           value: "v1.0.0"
       workspaces:
@@ -128,7 +123,7 @@ spec:
             fi
 
             # change to the app directory
-            cd app/kubernetes-node-app-master
+            cd app/
 
             # deploy the service
             cd chart/kubernetesnodeapp
