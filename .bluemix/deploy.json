@@ -61,6 +61,14 @@
           "api-key"
         ]
       }
+    },
+    "newOrExistingCluster": {
+      "title": "Cluster",
+      "type": "string",
+      "enum": [
+        "new",
+        "existing"
+      ]
     }
   },
   "required": [
@@ -104,6 +112,28 @@
       "title": {
         "$ref": "#/messages/deploy.region"
       }
+    },
+    {
+      "type": "selectfieldset",
+      "key": "newOrExistingCluster",
+      "titleMap": {
+        "new": "New",
+        "existing": "Existing"
+      },
+      "items": [
+        {
+          "type": "section",
+          "description": "Create a new cluster",
+          "items": [
+          ]
+        },
+        {
+          "type": "section",
+          "description": "Use an existing cluster",
+          "items": [
+          ]
+        }
+      ]
     }
   ]
 }
