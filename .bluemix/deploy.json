@@ -62,8 +62,8 @@
         ]
       }
     },
-    "newOrExistingCluster": {
-      "title": "Cluster",
+    "newOrExisting": {
+      "title": "Decide whether to create new resources or to reuse existing cluster and registry namespace",
       "type": "string",
       "enum": [
         "new",
@@ -115,21 +115,21 @@
     },
     {
       "type": "selectfieldset",
-      "key": "newOrExistingCluster",
+      "key": "newOrExisting",
       "titleMap": {
-        "new": "New",
-        "existing": "Existing"
+        "new": "Create new resources",
+        "existing": "Use existing resources"
       },
       "items": [
         {
           "type": "section",
-          "description": "Create a new cluster",
+          "description": "The pipeline will create a Virtual Private Cloud, a Kubernetes cluster and a Container Registry namespace",
           "items": [
           ]
         },
         {
           "type": "section",
-          "description": "Use an existing cluster",
+          "description": "Select an existing Kubernetes cluster, a Container Registry namespace to store a container image and a Kubernetes namespace to deploy the application.",
           "items": [
           ]
         }
