@@ -26,6 +26,7 @@ wizard.welcome.description: "To deploy the tutorial architecture, a toolchain wi
 wizard.step.deploy.label: "Deploy"
 wizard.step.deploy.title: "Deploy"
 
+wizard.step.summary.title: "Summary"
 wizard.summary.title: "Summary"
 wizard.summary.success.title: "Congratulations"
 wizard.summary.success.subtitle: "You have completed the configuration of your toolchain. Click the 'Create' button below to create the toolchain. Once created, the toolchain will trigger a pipeline run to provision the tutorial resources. Wait for the pipeline run to complete before accessing the provisioned resources and applications."
