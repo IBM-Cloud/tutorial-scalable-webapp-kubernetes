@@ -31,6 +31,19 @@
       "type": "string",
       "pattern": "\\S"
     },
+    "region": {
+      "description": {
+        "$ref": "#/messages/deploy.regionDescription"
+      },
+      "type": "string",
+      "disabled": false,
+      "validator": {
+        "v-type": "k8s-region",
+        "params": [
+          "api-key"
+        ]
+      }
+    },
     "resource-group": {
       "description": {
         "$ref": "#/messages/deploy.resourceGroupDescription"
@@ -48,26 +61,13 @@
           ]
         }
       }
-    },
-    "region": {
-      "description": {
-        "$ref": "#/messages/deploy.regionDescription"
-      },
-      "type": "string",
-      "disabled": false,
-      "validator": {
-        "v-type": "k8s-region",
-        "params": [
-          "api-key"
-        ]
-      }
     }
   },
   "required": [
     "api-key",
     "resource-prefix",
-    "resource-group",
-    "region"
+    "region",
+    "resource-group"
   ],
   "form": [
     {
@@ -92,17 +92,17 @@
     },
     {
       "type": "select",
-      "readonly": false,
-      "key": "resource-group",
+      "key": "region",
       "title": {
-        "$ref": "#/messages/deploy.resourceGroup"
+        "$ref": "#/messages/deploy.region"
       }
     },
     {
       "type": "select",
-      "key": "region",
+      "readonly": false,
+      "key": "resource-group",
       "title": {
-        "$ref": "#/messages/deploy.region"
+        "$ref": "#/messages/deploy.resourceGroup"
       }
     }
   ]
