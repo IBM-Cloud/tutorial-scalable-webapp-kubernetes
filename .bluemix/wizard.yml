@@ -12,3 +12,14 @@ steps:
     title:
       $ref: "#/messages/wizard.step.deploy.title"
     form: pipeline
+  - name: summary
+    title:
+      $ref: "#/messages/wizard.step.summary.title"
+    form: wizard_summary
+
+form:
+  wizard_summary:
+    parameters:
+      test: true
+    schema:
+      $ref: wizard_summary.json
