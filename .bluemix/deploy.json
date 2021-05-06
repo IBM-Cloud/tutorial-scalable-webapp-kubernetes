@@ -61,24 +61,6 @@
           "api-key"
         ]
       }
-    },
-    "newOrExisting": {
-      "title": "Decide whether to create new resources or to reuse existing cluster and registry namespace",
-      "type": "string",
-      "enum": [
-        "new",
-        "existing"
-      ]
-    },
-    "registry-namespace": {
-      "description": "REGISTRY NAMESPACE",
-      "type": "string",
-      "pattern": "^[a-z0-9][-_a-z0-9]{2,28}[a-z0-9]$",
-      "validator": {
-        "v-type": "k8s-registry-namespace",
-        "params": ["region"],
-        "validate": false
-      }
     }
   },
   "required": [
@@ -122,29 +104,6 @@
       "title": {
         "$ref": "#/messages/deploy.region"
       }
-    },
-    {
-      "type": "selectfieldset",
-      "key": "newOrExisting",
-      "titleMap": {
-        "new": "Create new resources",
-        "existing": "Use existing resources"
-      },
-      "items": [
-        {
-          "type": "section",
-          "description": "The pipeline will create a Virtual Private Cloud, a Kubernetes cluster and a Container Registry namespace",
-          "items": [
-          ]
-        },
-        {
-          "type": "section",
-          "description": "Select an existing Kubernetes cluster, a Container Registry namespace to store a container image and a Kubernetes namespace to deploy the application.",
-          "items": [
-            "registry-namespace"
-          ]
-        }
-      ]
     }
   ]
 }
