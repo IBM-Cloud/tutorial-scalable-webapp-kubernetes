@@ -21,7 +21,7 @@ deploy.regionDescription: "Region where existing resources are located and new r
 
 
 ## Wizard
-wizard.welcome.description: "With this toolchain, you can deploy the architecture shown in the tutorial."
+wizard.welcome.description: "To deploy the tutorial architecture, a toolchain will be created. This toolchain will provision infrastructure and deploy the code for this tutorial. Once the toolchain completes its first run, you will be able to access the created resources."
 wizard.step.deploy.label: "Deploy"
 wizard.step.deploy.title: "Deployment Target"
 
