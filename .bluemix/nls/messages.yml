@@ -5,7 +5,7 @@ template.description: "With this toolchain, you can deploy the architecture show
 template.gettingStarted: "**Your toolchain is ready! Wait for the first pipeline run to complete to access the deployed application.**"
 deploy.title: "Toolchain"
 deploy.description: "A toolchain to deploy a tutorial"
-deploy.longDescription: "The Delivery Pipeline automates the deployment of the tutorial architecture."
+deploy.longDescription: "After entering your API key, set a prefix for the resources to be created by this tutorial and select in which region and resource group they will be provisioned."
 
 deploy.apikeyDescription: "The API key is used to access IBM Cloud APIs. You can obtain your API key with 'ibmcloud iam api-key-create' or via the console at https://cloud.ibm.com/iam/apikeys by clicking **Create an IBM Cloud API key** (Each API key only can be viewed once)."
 deploy.apikey: "IBM Cloud API Key"
@@ -21,7 +21,7 @@ deploy.regionDescription: "Region where existing resources are located and new r
 
 
 ## Wizard
-wizard.welcome.description: "To deploy the tutorial architecture, a toolchain will be created. This toolchain will provision infrastructure and deploy the code for this tutorial. Once the toolchain completes its first run, you will be able to access the created resources.<br>\n\nSet a name for the toolchain and pick the region and resource where it will be created. You will decide where the resources for this tutorial will be created in the next step."
+wizard.welcome.description: "To deploy the tutorial architecture, a toolchain will be created. This toolchain will provision infrastructure and deploy the code for this tutorial. Once the toolchain completes its first run, you will be able to access the created resources.\n\nSet the name for the toolchain and select the region and resource group where it will be created. You will configure where the resources for this tutorial will be created in the next step."
 wizard.step.deploy.label: "Deploy"
 wizard.step.deploy.title: "Deployment Target"
 
