@@ -109,6 +109,21 @@ spec:
             export MYPROJECT=$(params.resource-prefix)-app
 
             ibmcloud ks cluster config --cluster $MYCLUSTER
+
+            # wait for permissions to be active
+            count=0
+            while [ "$(kubectl auth can-i create pods -n $KUBERNETES_NAMESPACE)" != "yes" ];
+            do
+              echo -n "."
+              sleep 10s
+              count=$((count+1))
+              if ! ((count % 10)); then
+                echo "RBAC taking too long to deploy"
+                return 1
+              fi
+            done
+            echo "RBAC deployed"
+
             export INGRESS_SUBDOMAIN=$(ibmcloud ks cluster get --cluster $MYCLUSTER --output json | jq -r '.ingress.hostname')
             export INGRESS_SECRET_NAME=$(ibmcloud ks cluster get --cluster $MYCLUSTER --output json | jq -r '.ingress.secretName')
 
