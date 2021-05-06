@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 messages:
   $i18n: locales.yml
 template:
@@ -18,6 +18,8 @@ template:
       "[" + $env.branch + "]" +
         "(" + $env.repository +
           "/tree/" + $env.branch + ")"
+  wizard:
+    $ref: wizard.yml
 toolchain:
   name: '{{tutorialId}}-{{timestamp}}'
   template:

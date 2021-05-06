@@ -18,3 +18,10 @@ deploy.resourceGroupDescription: "The **existing resource group** where resource
 
 deploy.region: "Region"
 deploy.regionDescription: "Region where existing resources are located and new resources will be created."
+
+
+## Wizard
+wizard.welcome.description: "With this toolchain, you can deploy the architecture shown in the tutorial."
+wizard.step.deploy.label: "Deploy"
+wizard.step.deploy.title: "Deployment Target"
+

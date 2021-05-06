@@ -1,0 +1,14 @@
+---
+version: '1'
+messages:
+  $i18n: locales.yml
+welcome:
+  description: 
+      $ref: "#/messages/wizard.welcome.description"
+steps:
+  - name: deploy
+    label: 
+      $ref: "#/messages/wizard.step.deploy.label"
+    title:
+      $ref: "#/messages/wizard.step.deploy.title"
+    form: pipeline
